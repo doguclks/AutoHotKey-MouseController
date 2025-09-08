@@ -37,15 +37,13 @@ d up::d := 0
 $Shift::shift := 1
 $Shift up::shift := 0
 
-; CapsLock scroll
-$CapsLock::scroll := 1
-$CapsLock up::scroll := 0
 
 ; Mouse tıklamaları
 j::Click, left
 k::Click, right
 l::Click, 2
-i::Click, middle
+; --- Middle Click + Scroll ---
+i:: Click,middle
 
 ; Drag & Drop
 u::
