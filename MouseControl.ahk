@@ -6,99 +6,109 @@ SetTimer, MoveMouse, 10
 ; --- Ayarlar ---
 normalSpeed := 6
 turboSpeed := 20
-smoothFactor := 3
-w := 0, a := 0, s := 0, d := 0
-shift := 0
+accelTime := 1000  ; 1 saniyede maksimum hıza ulaşır
+wPressed := 0
+sPressed := 0
+aPressed := 0
+dPressed := 0
 scroll := 0
 dragging := 0
-mouseMode := true  ; Başlangıçta aktif
+mouseMode := true
+globalAccelStart := 0  ; ivme başlangıcı
 
-; --- Toggle Mouse/WASD Modu (F12) ---
-^!m::  ; Ctrl + Alt + M
+; --- Toggle Mouse/WASD Modu ---
+^!m::
     mouseMode := !mouseMode
-    
 return
 
-
-; --- MouseMode aktifken hotkeyler ---
 #If mouseMode
 
-; WASD hareketleri
-w::w := 1
-w up::w := 0
-a::a := 1
-a up::a := 0
-s::s := 1
-s up::s := 0
-d::d := 1
-d up::d := 0
+; Tuş basma izleme
+w::
+    wPressed := 1
+return
+w up::
+    wPressed := 0
+return
 
-; Shift turbo
-$Shift::shift := 1
-$Shift up::shift := 0
+s::
+    sPressed := 1
+return
+s up::
+    sPressed := 0
+return
 
+a::
+    aPressed := 1
+return
+a up::
+    aPressed := 0
+return
+
+d::
+    dPressed := 1
+return
+d up::
+    dPressed := 0
+return
 
 ; Mouse tıklamaları
 j::Click, left
 k::Click, right
 l::Click, 2
-; --- Middle Click + Scroll ---
-i:: Click,middle
+i::Click, middle
 
 ; Drag & Drop
 u::
     if (dragging) {
-        MouseClick, left, , , , , U
+        MouseClick, left,,, , , U
         dragging := 0
     } else {
-        MouseClick, left, , , , , D
+        MouseClick, left,,, , , D
         dragging := 1
     }
 return
 
-; Hız ayarı
-[::  
-    normalSpeed := normalSpeed > 2 ? normalSpeed - 2 : 2
-    TrayTip, Mouse Speed, Hız azaltıldı: %normalSpeed%, 500
-return
-
-]::  
-    normalSpeed += 2
-    TrayTip, Mouse Speed, Hız artırıldı: %normalSpeed%, 500
-return
-
-#If  ; mouseMode dışında hotkey yok
+#If
 
 ; --- Hareket / Scroll Döngüsü ---
 MoveMouse:
     if (!mouseMode)
-        return  ; mouse modu kapalıysa hiçbir şey yapma
+        return
 
+    ; --- Scroll modu ---
     if (scroll) {
-        if (w)
+        if (wPressed)
             Send {WheelUp}
-        if (s)
+        if (sPressed)
             Send {WheelDown}
-        if (a)
+        if (aPressed)
             Send {WheelLeft}
-        if (d)
+        if (dPressed)
             Send {WheelRight}
         return
     }
 
-    dx := 0
-    dy := 0
-    speed := shift ? turboSpeed : normalSpeed
+    ; --- İvme hesaplama ---
+    anyPressed := wPressed || sPressed || aPressed || dPressed
+    if (anyPressed) {
+        if (!globalAccelStart)
+            globalAccelStart := A_TickCount
+        speed := normalSpeed + ((turboSpeed - normalSpeed) * Min((A_TickCount - globalAccelStart) / accelTime, 1))
+    } else {
+        globalAccelStart := 0
+        speed := 0
+    }
 
-    if (w)
-        dy -= speed
-    if (s)
-        dy += speed
-    if (a)
-        dx -= speed
-    if (d)
-        dx += speed
+    ; --- Hareket --- 
+    dx := (aPressed ? -1 : 0) + (dPressed ? 1 : 0)
+    dy := (wPressed ? -1 : 0) + (sPressed ? 1 : 0)
 
-    if (dx != 0 or dy != 0)
+    ; Vektörel normalize ederek çapraz hız sabitleme
+    length := Sqrt(dx*dx + dy*dy)
+    if (length != 0) {
+        dx := dx / length * speed
+        dy := dy / length * speed
         MouseMove, dx, dy, 0, R
+    }
 return
