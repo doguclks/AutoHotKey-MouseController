@@ -6,7 +6,7 @@ SetTimer, MoveMouse, 10
 ; --- Ayarlar ---
 normalSpeed := 6
 turboSpeed := 20
-accelTime := 1000  ; 1 saniyede maksimum hıza ulaşır
+accelTime := 500  ; 1 saniyede maksimum hıza ulaşır
 wPressed := 0
 sPressed := 0
 aPressed := 0
@@ -56,7 +56,15 @@ return
 j::Click, left
 k::Click, right
 l::Click, 2
-i::Click, middle
+; Scroll modu ve orta tıklama bir arada
+i::
+    scroll := 1
+    Click, middle
+return
+
+i up::
+    scroll := 0
+return
 
 ; Drag & Drop
 u::
