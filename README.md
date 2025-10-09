@@ -42,5 +42,5 @@ A = Scroll Left
 D = Scroll Right
 
 Dual monitor usage
-Currently, there are some issues when using the script with multiple monitors (e.g., cursor getting stuck when moving across screens).
-This will be addressed in future updates.
+fixed (v2-MouseCotroller) Currently, there are some issues when using the script with multiple monitors (e.g., cursor getting stuck when moving across screens).
+This will be addressed in future updates. 
