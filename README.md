@@ -22,6 +22,8 @@ I = Middle click (When held down → activates Scroll Mode, allowing WASD to scr
 
 U = Drag & Drop mode
 
+Shift = Slow Mode
+
 First press: holds down the left mouse button (drag starts).
 
 Press again: releases the left mouse button (drag ends).
@@ -42,5 +44,3 @@ A = Scroll Left
 D = Scroll Right
 
 Dual monitor usage
-fixed (v2-MouseCotroller) Currently, there are some issues when using the script with multiple monitors (e.g., cursor getting stuck when moving across screens).
-This will be addressed in future updates. 
